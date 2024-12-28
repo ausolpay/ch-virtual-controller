@@ -87,7 +87,13 @@ document.getElementById("connect").addEventListener("click", async () => {
         alert(`Connected to: ${device.name}`);
     } catch (error) {
         console.error("Bluetooth connection failed:", error);
-        alert("Failed to connect to Bluetooth. Make sure you are using Chrome and a secure context.");
+        if (error.name === "NotAllowedError") {
+            alert("Bluetooth permission was denied. Please allow Bluetooth permissions.");
+        } else if (error.name === "NotFoundError") {
+            alert("No compatible devices found. Ensure your Bluetooth device is discoverable.");
+        } else {
+            alert("Failed to connect to Bluetooth. Make sure you are using Chrome and a secure context.");
+        }
     }
 });
 
