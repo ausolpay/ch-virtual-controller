@@ -21,7 +21,7 @@ let currentMode = "mode1";
 // Set to track pressed buttons
 let activeButtons = new Set();
 
-// Add Event Listeners
+// Add Event Listeners for All Buttons
 document.querySelectorAll("button").forEach((button) => {
     button.addEventListener("mousedown", (e) => {
         handleButtonPress(e.target.id, true);
@@ -31,20 +31,38 @@ document.querySelectorAll("button").forEach((button) => {
         handleButtonPress(e.target.id, false);
     });
 
-    button.addEventListener("mouseleave", (e) => {
-        handleButtonPress(e.target.id, false);
-    });
-
     button.addEventListener("touchstart", (e) => {
-        handleButtonPress(e.target.id, true);
-        e.preventDefault();
+        handleTouchStart(e);
     });
 
     button.addEventListener("touchend", (e) => {
+        handleTouchEnd(e);
+    });
+
+    button.addEventListener("mouseleave", (e) => {
         handleButtonPress(e.target.id, false);
-        e.preventDefault();
     });
 });
+
+// Handle Touch Start
+function handleTouchStart(e) {
+    const buttonId = e.target.id;
+    if (buttonMap[buttonId]) {
+        activeButtons.add(buttonId);
+        console.log(`Button pressed: ${buttonId}`);
+        sendHIDReport([...activeButtons]);
+    }
+}
+
+// Handle Touch End
+function handleTouchEnd(e) {
+    const buttonId = e.target.id;
+    if (buttonMap[buttonId]) {
+        activeButtons.delete(buttonId);
+        console.log(`Button released: ${buttonId}`);
+        sendHIDReport([...activeButtons]);
+    }
+}
 
 // Handle Button Press and Release
 function handleButtonPress(buttonId, isPressed) {
