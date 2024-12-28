@@ -19,12 +19,6 @@ const buttonMap = {
 let activeButtons = new Set();
 let connectedDevice = null;
 
-// Utility function for logging
-function log(message) {
-    console.log(message);
-    alert(message); // Show pop-up alerts for Android
-}
-
 // Add event listeners for all buttons
 document.querySelectorAll("button").forEach((button) => {
     button.addEventListener("mousedown", (e) => handleButtonPress(e.target.id, true));
@@ -44,10 +38,10 @@ function handleButtonPress(buttonId, isPressed) {
     if (buttonMap[buttonId]) {
         if (isPressed) {
             activeButtons.add(buttonId);
-            log(`Button pressed: ${buttonId}`);
+            console.log(`Button pressed: ${buttonId}`);
         } else {
             activeButtons.delete(buttonId);
-            log(`Button released: ${buttonId}`);
+            console.log(`Button released: ${buttonId}`);
         }
         sendHIDReport();
     }
@@ -57,25 +51,33 @@ function handleButtonPress(buttonId, isPressed) {
 function sendHIDReport() {
     if (connectedDevice) {
         const report = new Uint8Array(Array.from(activeButtons).map((btn) => buttonMap[btn]));
-        log(`Sending HID report: ${Array.from(activeButtons).join(", ")}`);
+        console.log(`Sending HID report: ${Array.from(activeButtons).join(", ")}`);
         // Actual HID reporting logic goes here
     } else {
-        log("No device connected.");
+        console.log("No device connected.");
     }
 }
 
 // Handle Bluetooth connection
 document.getElementById("connect").addEventListener("click", async () => {
     try {
+        if (!navigator.bluetooth) {
+            console.error("Web Bluetooth is not supported in this browser.");
+            alert("Web Bluetooth is not supported in this browser.");
+            return;
+        }
+
         const device = await navigator.bluetooth.requestDevice({
             acceptAllDevices: true,
             optionalServices: ["human_interface_device"],
         });
 
         connectedDevice = await device.gatt.connect();
-        log(`Connected to device: ${device.name}`);
+        console.log(`Connected to device: ${device.name}`);
+        alert(`Connected to: ${device.name}`);
     } catch (error) {
-        log(`Bluetooth connection failed: ${error.message}`);
+        console.error("Bluetooth connection failed:", error);
+        alert(`Failed to connect to Bluetooth: ${error.message}`);
     }
 });
 
@@ -85,5 +87,5 @@ document.getElementById("mode2").addEventListener("click", () => switchMode("mod
 
 function switchMode(mode) {
     document.getElementById("controller").className = mode;
-    log(`Switched to ${mode}`);
+    console.log(`Switched to ${mode}`);
 }
