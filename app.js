@@ -15,39 +15,47 @@ const buttonMap = {
     right: 0x0D,
 };
 
-// Track active buttons
+// Track pressed buttons
 let activeButtons = new Set();
 let connectedDevice = null;
 
-// Add event listeners for all buttons
+// Add Event Listeners
 document.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("mousedown", (e) => handleButtonPress(e.target.id, true));
-    button.addEventListener("mouseup", (e) => handleButtonPress(e.target.id, false));
-    button.addEventListener("touchstart", (e) => {
-        e.preventDefault();
+    button.addEventListener("mousedown", (e) => {
         handleButtonPress(e.target.id, true);
     });
+
+    button.addEventListener("mouseup", (e) => {
+        handleButtonPress(e.target.id, false);
+    });
+
+    button.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Prevent scrolling
+        handleButtonPress(e.target.id, true);
+    });
+
     button.addEventListener("touchend", (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent scrolling
         handleButtonPress(e.target.id, false);
     });
 });
 
-// Handle button presses and releases
+// Handle Button Press
 function handleButtonPress(buttonId, isPressed) {
-    if (buttonMap[buttonId]) {
-        if (isPressed) {
-            activeButtons.add(buttonId);
-            console.log(`Button pressed: ${buttonId}`);
-        } else {
-            activeButtons.delete(buttonId);
-            console.log(`Button released: ${buttonId}`);
-        }
-        sendHIDReport();
+    if (!buttonMap[buttonId]) return;
+
+    if (isPressed) {
+        activeButtons.add(buttonId);
+        console.log(`Button pressed: ${buttonId}`);
+    } else {
+        activeButtons.delete(buttonId);
+        console.log(`Button released: ${buttonId}`);
     }
+
+    sendHIDReport();
 }
 
-// Send HID report to the connected Bluetooth device
+// Send HID Report
 function sendHIDReport() {
     if (connectedDevice) {
         const report = new Uint8Array(Array.from(activeButtons).map((btn) => buttonMap[btn]));
@@ -58,15 +66,9 @@ function sendHIDReport() {
     }
 }
 
-// Handle Bluetooth connection
+// Bluetooth Connection
 document.getElementById("connect").addEventListener("click", async () => {
     try {
-        if (!navigator.bluetooth) {
-            console.error("Web Bluetooth is not supported in this browser.");
-            alert("Web Bluetooth is not supported in this browser.");
-            return;
-        }
-
         const device = await navigator.bluetooth.requestDevice({
             acceptAllDevices: true,
             optionalServices: ["human_interface_device"],
@@ -81,7 +83,7 @@ document.getElementById("connect").addEventListener("click", async () => {
     }
 });
 
-// Switch modes
+// Switch Modes
 document.getElementById("mode1").addEventListener("click", () => switchMode("mode1"));
 document.getElementById("mode2").addEventListener("click", () => switchMode("mode2"));
 
