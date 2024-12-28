@@ -15,13 +15,10 @@ const buttonMap = {
     right: 0x0D,
 };
 
-// Current Mode
-let currentMode = "mode1";
-
 // Set to track pressed buttons
 let activeButtons = new Set();
 
-// Add Event Listeners for All Buttons
+// Add Event Listeners for Buttons
 document.querySelectorAll("button").forEach((button) => {
     button.addEventListener("mousedown", (e) => {
         handleButtonPress(e.target.id, true);
@@ -32,11 +29,13 @@ document.querySelectorAll("button").forEach((button) => {
     });
 
     button.addEventListener("touchstart", (e) => {
-        handleTouchStart(e);
+        e.preventDefault();
+        handleButtonPress(e.target.id, true);
     });
 
     button.addEventListener("touchend", (e) => {
-        handleTouchEnd(e);
+        e.preventDefault();
+        handleButtonPress(e.target.id, false);
     });
 
     button.addEventListener("mouseleave", (e) => {
@@ -44,52 +43,30 @@ document.querySelectorAll("button").forEach((button) => {
     });
 });
 
-// Handle Touch Start
-function handleTouchStart(e) {
-    const buttonId = e.target.id;
-    if (buttonMap[buttonId]) {
-        activeButtons.add(buttonId);
-        console.log(`Button pressed: ${buttonId}`);
-        sendHIDReport([...activeButtons]);
-    }
-}
-
-// Handle Touch End
-function handleTouchEnd(e) {
-    const buttonId = e.target.id;
-    if (buttonMap[buttonId]) {
-        activeButtons.delete(buttonId);
-        console.log(`Button released: ${buttonId}`);
-        sendHIDReport([...activeButtons]);
-    }
-}
-
-// Handle Button Press and Release
+// Handle Button Presses
 function handleButtonPress(buttonId, isPressed) {
     if (buttonMap[buttonId]) {
         if (isPressed) {
             activeButtons.add(buttonId);
-            console.log(`Button pressed: ${buttonId}`);
-            sendHIDReport([...activeButtons]);
         } else {
             activeButtons.delete(buttonId);
-            console.log(`Button released: ${buttonId}`);
-            sendHIDReport([...activeButtons]);
         }
+        sendHIDReport();
     }
 }
 
-// Switch Modes
-document.getElementById("mode1").addEventListener("click", () => switchMode("mode1"));
-document.getElementById("mode2").addEventListener("click", () => switchMode("mode2"));
-
-function switchMode(mode) {
-    currentMode = mode;
-    document.getElementById("controller").className = mode;
-    alert(`Switched to ${mode}`);
+// Send HID Report
+function sendHIDReport() {
+    if (connectedDevice) {
+        const report = new Uint8Array(Array.from(activeButtons).map((btn) => buttonMap[btn]));
+        console.log(`Sending HID report: ${Array.from(activeButtons).join(", ")}`);
+        // Implement actual HID reporting logic here
+    } else {
+        console.log("No device connected.");
+    }
 }
 
-// Bluetooth HID Connection
+// Bluetooth Connection
 let connectedDevice = null;
 
 document.getElementById("connect").addEventListener("click", async () => {
@@ -99,29 +76,20 @@ document.getElementById("connect").addEventListener("click", async () => {
             optionalServices: ["human_interface_device"],
         });
 
+        connectedDevice = await device.gatt.connect();
         console.log(`Connected to device: ${device.name}`);
-        connectedDevice = device;
-
         alert(`Connected to: ${device.name}`);
     } catch (error) {
         console.error("Bluetooth connection failed:", error);
-        if (error.name === "NotAllowedError") {
-            alert("Bluetooth permission was denied. Please allow Bluetooth permissions.");
-        } else if (error.name === "NotFoundError") {
-            alert("No compatible devices found. Ensure your Bluetooth device is discoverable.");
-        } else {
-            alert("Failed to connect to Bluetooth. Make sure you are using Chrome and a secure context.");
-        }
+        alert(`Failed to connect to Bluetooth: ${error.message}`);
     }
 });
 
-// Send HID Report
-function sendHIDReport(activeButtons) {
-    if (connectedDevice) {
-        const report = new Uint8Array(activeButtons.map((btn) => buttonMap[btn]));
-        console.log(`Sending HID report: ${[...activeButtons].join(", ")}`);
-        // Implement actual HID reporting here
-    } else {
-        console.log("No device connected.");
-    }
+// Switch Modes
+document.getElementById("mode1").addEventListener("click", () => switchMode("mode1"));
+document.getElementById("mode2").addEventListener("click", () => switchMode("mode2"));
+
+function switchMode(mode) {
+    document.getElementById("controller").className = mode;
+    alert(`Switched to ${mode}`);
 }
