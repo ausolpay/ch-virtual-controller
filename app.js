@@ -15,60 +15,56 @@ const buttonMap = {
     right: 0x0D,
 };
 
-// Set to track pressed buttons
+// Track active buttons
 let activeButtons = new Set();
+let connectedDevice = null;
 
-// Add Event Listeners for Buttons
+// Utility function for logging
+function log(message) {
+    console.log(message);
+    alert(message); // Show pop-up alerts for Android
+}
+
+// Add event listeners for all buttons
 document.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("mousedown", (e) => {
-        handleButtonPress(e.target.id, true);
-    });
-
-    button.addEventListener("mouseup", (e) => {
-        handleButtonPress(e.target.id, false);
-    });
-
+    button.addEventListener("mousedown", (e) => handleButtonPress(e.target.id, true));
+    button.addEventListener("mouseup", (e) => handleButtonPress(e.target.id, false));
     button.addEventListener("touchstart", (e) => {
         e.preventDefault();
         handleButtonPress(e.target.id, true);
     });
-
     button.addEventListener("touchend", (e) => {
         e.preventDefault();
         handleButtonPress(e.target.id, false);
     });
-
-    button.addEventListener("mouseleave", (e) => {
-        handleButtonPress(e.target.id, false);
-    });
 });
 
-// Handle Button Presses
+// Handle button presses and releases
 function handleButtonPress(buttonId, isPressed) {
     if (buttonMap[buttonId]) {
         if (isPressed) {
             activeButtons.add(buttonId);
+            log(`Button pressed: ${buttonId}`);
         } else {
             activeButtons.delete(buttonId);
+            log(`Button released: ${buttonId}`);
         }
         sendHIDReport();
     }
 }
 
-// Send HID Report
+// Send HID report to the connected Bluetooth device
 function sendHIDReport() {
     if (connectedDevice) {
         const report = new Uint8Array(Array.from(activeButtons).map((btn) => buttonMap[btn]));
-        console.log(`Sending HID report: ${Array.from(activeButtons).join(", ")}`);
-        // Implement actual HID reporting logic here
+        log(`Sending HID report: ${Array.from(activeButtons).join(", ")}`);
+        // Actual HID reporting logic goes here
     } else {
-        console.log("No device connected.");
+        log("No device connected.");
     }
 }
 
-// Bluetooth Connection
-let connectedDevice = null;
-
+// Handle Bluetooth connection
 document.getElementById("connect").addEventListener("click", async () => {
     try {
         const device = await navigator.bluetooth.requestDevice({
@@ -77,19 +73,17 @@ document.getElementById("connect").addEventListener("click", async () => {
         });
 
         connectedDevice = await device.gatt.connect();
-        console.log(`Connected to device: ${device.name}`);
-        alert(`Connected to: ${device.name}`);
+        log(`Connected to device: ${device.name}`);
     } catch (error) {
-        console.error("Bluetooth connection failed:", error);
-        alert(`Failed to connect to Bluetooth: ${error.message}`);
+        log(`Bluetooth connection failed: ${error.message}`);
     }
 });
 
-// Switch Modes
+// Switch modes
 document.getElementById("mode1").addEventListener("click", () => switchMode("mode1"));
 document.getElementById("mode2").addEventListener("click", () => switchMode("mode2"));
 
 function switchMode(mode) {
     document.getElementById("controller").className = mode;
-    alert(`Switched to ${mode}`);
+    log(`Switched to ${mode}`);
 }
