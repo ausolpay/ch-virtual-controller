@@ -1,0 +1,126 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#controller {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Mode Buttons */
+#mode-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#mode-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Star Power Button */
+#star-power {
+    padding: 20px 40px;
+    font-size: 18px;
+    background-color: gold;
+    border: none;
+    border-radius: 10px;
+    color: black;
+    cursor: pointer;
+}
+
+/* Colored Buttons */
+#colored-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.colored-button {
+    width: 80px;
+    height: 80px;
+    font-size: 16px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+}
+
+#red { background-color: red; }
+#yellow { background-color: yellow; color: black; }
+#green { background-color: green; }
+#blue { background-color: blue; }
+#orange { background-color: orange; }
+
+/* Strum Button */
+#strum {
+    padding: 20px 40px;
+    font-size: 18px;
+    background-color: #888;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+/* D-Pad Controls */
+#dpad {
+    display: grid;
+    grid-template-columns: 60px 60px 60px;
+    grid-template-rows: 60px 60px;
+    gap: 10px;
+}
+
+.dpad-button {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+    background-color: #444;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Start and Select Buttons */
+#start-select {
+    display: flex;
+    gap: 20px;
+}
+
+#start, #select {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Connect Button */
+#connect {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
