@@ -1,4 +1,3 @@
-/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #1a1a1a;
@@ -19,7 +18,6 @@ body {
     gap: 20px;
 }
 
-/* Mode Buttons */
 #mode-buttons {
     display: flex;
     gap: 10px;
@@ -35,7 +33,6 @@ body {
     cursor: pointer;
 }
 
-/* Star Power Button */
 #star-power {
     padding: 20px 40px;
     font-size: 18px;
@@ -46,7 +43,6 @@ body {
     cursor: pointer;
 }
 
-/* Colored Buttons */
 #colored-buttons {
     display: flex;
     gap: 10px;
@@ -58,7 +54,6 @@ body {
     font-size: 16px;
     border: none;
     border-radius: 50%;
-    color: white;
     cursor: pointer;
 }
 
@@ -68,7 +63,6 @@ body {
 #blue { background-color: blue; }
 #orange { background-color: orange; }
 
-/* Strum Button */
 #strum {
     padding: 20px 40px;
     font-size: 18px;
@@ -79,7 +73,6 @@ body {
     cursor: pointer;
 }
 
-/* D-Pad Controls */
 #dpad {
     display: grid;
     grid-template-columns: 60px 60px 60px;
@@ -98,7 +91,6 @@ body {
     cursor: pointer;
 }
 
-/* Start and Select Buttons */
 #start-select {
     display: flex;
     gap: 20px;
@@ -114,7 +106,6 @@ body {
     cursor: pointer;
 }
 
-/* Connect Button */
 #connect {
     padding: 10px 20px;
     font-size: 16px;
